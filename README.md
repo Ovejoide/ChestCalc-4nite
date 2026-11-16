@@ -4,7 +4,7 @@
 
 Fortnite does not tell you how many chests you have opened, and it definitely does not tell you how unlucky (or lucky) you are. ChestCalc 4nite does: log your chests by type and instantly see the probability that you should have found each reward by now, and how many more chests it takes to reach 50% or 90%.
 
-**Live site:** https://YOUR-USERNAME.github.io/chestcalc-4nite/
+**Live site:** https://ovejoide.github.io/ChestCalc-4nite/
 
 ---
 

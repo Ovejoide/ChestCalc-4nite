@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Treasure chest calculator</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="cabecera">
+  <div class="cabecera-fila">
+    <h1><span class="ficha" aria-hidden="true"></span><span data-i="h1"></span></h1>
+    <label class="idioma"><span class="sr" data-i="lang_label"></span>
+      <select id="idioma"><option value="en">English</option><option value="es">Español</option></select>
+    </label>
+  </div>
+  <p data-i="subtitle"></p>
+</header>
+
+<main>
+  <div class="superior">
+    <section class="panel registro" aria-labelledby="t-registro">
+      <h2 id="t-registro" data-i="reg_h"></h2>
+      <div class="tabla-scroll">
+        <table class="tabla-registro">
+          <thead><tr>
+            <th data-i="col_type"></th><th data-i="col_normal"></th><th data-i="col_hours"></th>
+            <th class="der" data-i="col_total"></th>
+            <th class="centro" id="th-contar" data-i="col_count"></th>
+            <th><span class="sr" data-i="col_remove"></span></th>
+          </tr></thead>
+          <tbody id="cuerpo-registro"></tbody>
+          <tfoot><tr>
+            <th data-i="foot_counted"></th>
+            <td class="der" id="tt-normal">0</td><td class="der" id="tt-horas">0</td>
+            <td class="der" id="tt-total">0</td><td></td><td></td>
+          </tr></tfoot>
+        </table>
+      </div>
+      <div class="acciones">
+        <button type="button" id="btn-nuevo" class="btn" data-i="btn_new"></button>
+        <button type="button" id="btn-cero" class="btn btn-suave" data-i="btn_zero"></button>
+        <button type="button" id="btn-quitar-nuevos" class="btn btn-peligro" data-i="btn_remove_new"></button>
+      </div>
+    </section>
+
+    <section class="hero" aria-labelledby="t-hero">
+      <h2 id="t-hero" data-i="hero_h"></h2>
+      <label class="campo"><span data-i="hero_pick"></span> <select id="sel-destacada"></select></label>
+      <p class="hero-cifra" id="hero-pct" aria-live="polite">0%</p>
+      <p class="hero-texto" id="hero-texto"></p>
+      <div class="meta">
+        <div class="meta-cab"><span data-i="hero_path"></span><span id="meta-num">0 / 0</span></div>
+        <div class="barra barra-gruesa" id="meta-prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="meta-barra"></span></div>
+      </div>
+      <p class="hero-extra" id="hero-extra"></p>
+    </section>
+  </div>
+
+  <section class="panel" aria-labelledby="t-res">
+    <h2 id="t-res" data-i="res_h"></h2>
+    <div class="controles">
+      <label class="campo"><span data-i="ctl_extra"></span> <input type="number" id="extra" min="0" step="100"></label>
+      <label class="campo"><span data-i="ctl_mode"></span>
+        <select id="modo-extra"><option value="normal" data-i="mode_normal"></option><option value="horas" data-i="mode_hours"></option></select>
+      </label>
+      <label class="campo"><span data-i="ctl_pergame"></span> <input type="number" id="por-partida" min="1" step="1"></label>
+    </div>
+    <div class="tabla-scroll">
+      <table class="tabla-res">
+        <thead><tr>
+          <th data-i="th_reward"></th><th class="der" data-i="th_rate"></th><th class="der" data-i="th_hours_rate"></th>
+          <th data-i="th_prob"></th><th class="der" id="th-extra"></th>
+          <th class="der" data-i="th_f50"></th><th class="der" data-i="th_f90"></th>
+        </tr></thead>
+        <tbody id="cuerpo-res"></tbody>
+      </table>
+    </div>
+    <p class="nota" data-i-html="note_html"></p>
+  </section>
+
+  <section class="panel" aria-labelledby="t-ref">
+    <h2 id="t-ref" data-i="ref_h"></h2>
+    <div class="controles">
+      <label class="campo"><span data-i="ref_open_in"></span>
+        <select id="modo-ref"><option value="normal" data-i="mode_normal"></option><option value="horas" data-i="mode_hours"></option></select>
+      </label>
+    </div>
+    <div class="tabla-scroll">
+      <table class="tabla-res">
+        <thead><tr>
+          <th data-i="th_reward"></th><th class="der" data-i="th_rate"></th>
+          <th class="der" data-th-ref="0"></th><th class="der" data-th-ref="1"></th><th class="der" data-th-ref="2"></th>
+          <th class="der" data-i="th_50at"></th>
+        </tr></thead>
+        <tbody id="cuerpo-ref"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <details class="panel">
+    <summary data-i="adj_h"></summary>
+    <p class="nota" data-i="adj_note"></p>
+    <div class="tabla-scroll">
+      <table class="tabla-res">
+        <thead><tr><th data-i="th_reward"></th><th data-i="th_rate"></th><th data-i="adj_mult"></th></tr></thead>
+        <tbody id="cuerpo-ajustes"></tbody>
+      </table>
+    </div>
+    <div class="acciones"><button type="button" id="btn-tasas" class="btn btn-suave" data-i="btn_restore"></button></div>
+  </details>
+</main>
+
+<footer class="pie"><p data-i="foot"></p></footer>
+<script src="app.js"></script>
+</body>
+</html>

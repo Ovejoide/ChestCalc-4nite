@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const CLAVE = 'calculadora-cofres-v1';
+  const CLAVE = 'chestcalc-4nite-v1';
   const TASAS_GUIA = [
     { id: 'ficha', tasa: 137500, mult: 1.5, moneda: true },
     { id: 'atuendo', tasa: 1562500, mult: 7.5 },
@@ -11,9 +11,9 @@
     { id: 'gizmo', tasa: 127, mult: 1 },
   ];
   const TIPOS_INICIALES = [
-    { id: 't1', nombre: '', normal: 614, horas: 0, cuenta: true, color: '#ffc933' },
-    { id: 't2', nombre: '', normal: 13, horas: 0, cuenta: true, color: '#cfd8ff' },
-    { id: 't3', nombre: '', normal: 12, horas: 0, cuenta: true, color: '#b983ff' },
+    { id: 't1', nombre: '', normal: 0, horas: 0, cuenta: true, color: '#ffc933' },
+    { id: 't2', nombre: '', normal: 0, horas: 0, cuenta: true, color: '#cfd8ff' },
+    { id: 't3', nombre: '', normal: 0, horas: 0, cuenta: true, color: '#b983ff' },
   ];
   const COLORES_NUEVOS = ['#5df3ff', '#ff8ad8', '#7dff9b', '#ff9f5a'];
 
@@ -30,7 +30,7 @@
   /* Textos de la interfaz */
   const D = {
     en: {
-      title: 'Treasure chest calculator', h1: 'Treasure chest calculator',
+      title: 'ChestCalc 4nite', h1: 'ChestCalc 4nite',
       subtitle: 'Log the chests you open and see your chances of getting each reward.', lang_label: 'Language',
       reg_h: 'Chests opened', col_type: 'Chest type', col_normal: 'Normal matches', col_hours: 'Treasure Hours', col_total: 'Total',
       col_count: 'Count', col_count_title: 'Untick the types that should not count toward the probability',
@@ -64,7 +64,7 @@
       rate_of: (n) => `1 in ${n}`, no_change: 'No change', ref_hours: (n) => `1 in ${n} in Treasure Hours`,
     },
     es: {
-      title: 'Calculadora de cofres del tesoro', h1: 'Calculadora de cofres del tesoro',
+      title: 'ChestCalc 4nite', h1: 'ChestCalc 4nite',
       subtitle: 'Anota los cofres que abres y mira cuánta probabilidad tienes de conseguir cada recompensa.', lang_label: 'Idioma',
       reg_h: 'Cofres abiertos', col_type: 'Tipo de cofre', col_normal: 'Partidas normales', col_hours: 'Horas del tesoro', col_total: 'Total',
       col_count: 'Contar', col_count_title: 'Desmarca los tipos que no cuentan para la probabilidad',
@@ -182,9 +182,9 @@
     $('#cuerpo-registro').innerHTML = estado.tipos.map((t, i) =>
       `<tr data-i="${i}" style="--c:${t.color}">` +
       `<td><input class="in-nombre" data-campo="nombre" value="${esc(t.nombre)}" aria-label="${esc(tr('ar_name'))}"></td>` +
-      `<td>${stepper('normal', t.normal, tr('lbl_normal'))}</td><td>${stepper('horas', t.horas, tr('lbl_hours'))}</td>` +
-      `<td class="der" data-total>${num(t.normal + t.horas)}</td>` +
-      `<td class="centro"><input type="checkbox" data-campo="cuenta" ${t.cuenta ? 'checked' : ''} aria-label="${esc(tr('ar_includes', t.nombre))}"></td>` +
+      `<td data-label="${esc(tr('col_normal'))}">${stepper('normal', t.normal, tr('lbl_normal'))}</td><td data-label="${esc(tr('col_hours'))}">${stepper('horas', t.horas, tr('lbl_hours'))}</td>` +
+      `<td class="der" data-total data-label="${esc(tr('col_total'))}">${num(t.normal + t.horas)}</td>` +
+      `<td class="centro" data-label="${esc(tr('col_count'))}"><input type="checkbox" data-campo="cuenta" ${t.cuenta ? 'checked' : ''} aria-label="${esc(tr('ar_includes', t.nombre))}"></td>` +
       `<td><button type="button" class="btn-quitar" data-accion="borrar" aria-label="${esc(tr('ar_remove', t.nombre))}">${tr('btn_row_remove')}</button></td></tr>`).join('');
   }
 
@@ -254,19 +254,22 @@
 
   function renderResultados() {
     const { n, h } = contados(), horasX = estado.modoExtra === 'horas';
-    $('#th-extra').textContent = tr('th_more', num(estado.extra));
+    const cabezaExtra = tr('th_more', num(estado.extra));
+    $('#th-extra').textContent = cabezaExtra;
     const faltan = (c) => c === 0 ? tr('done') : `${num(c)}<small>${tr('games', num(Math.ceil(c / estado.porPartida)))}</small>`;
+    const celda = (cls, etiqueta, html) => `<td class="${cls}" data-label="${esc(etiqueta)}"><div class="v">${html}</div></td>`;
     $('#cuerpo-res').innerHTML = estado.tasas.map((r) => {
       const L = logSin(r, n, h), P = probDe(L);
       const Px = probDe(L + estado.extra * Math.log1p(-pCofre(r, horasX)));
       const ancho = P > 0 ? Math.max(P * 100, 0.6) : 0;
       return `<tr class="${r.id === estado.destacada ? 'destacada' : ''}">` +
         `<th scope="row">${r.moneda ? '<span class="ficha" aria-hidden="true"></span>' : ''}${esc(nombreR(r))}</th>` +
-        `<td class="der">${tr('rate_of', num(r.tasa))}</td>` +
-        `<td class="der">${r.mult === 1 ? tr('no_change') : `${tr('rate_of', num(r.tasa / r.mult))}<small>&times;${dec(r.mult, 0, 2)}</small>`}</td>` +
-        `<td class="celda-prob"><div class="barra"><span style="width:${ancho}%"></span></div><strong>${pct(P)}</strong></td>` +
-        `<td class="der">${pct(Px)}</td>` +
-        `<td class="der">${faltan(cofresHasta(r, L, 0.5, horasX))}</td><td class="der">${faltan(cofresHasta(r, L, 0.9, horasX))}</td></tr>`;
+        celda('der', tr('th_rate'), tr('rate_of', num(r.tasa))) +
+        celda('der', tr('th_hours_rate'), r.mult === 1 ? tr('no_change') : `${tr('rate_of', num(r.tasa / r.mult))}<small>&times;${dec(r.mult, 0, 2)}</small>`) +
+        celda('celda-prob', tr('th_prob'), `<div class="barra"><span style="width:${ancho}%"></span></div><strong>${pct(P)}</strong>`) +
+        celda('der', cabezaExtra, pct(Px)) +
+        celda('der', tr('th_f50'), faltan(cofresHasta(r, L, 0.5, horasX))) +
+        celda('der', tr('th_f90'), faltan(cofresHasta(r, L, 0.9, horasX))) + '</tr>';
     }).join('');
   }
 
@@ -274,8 +277,9 @@
   function construirReferencia() {
     $('#cuerpo-ref').innerHTML = estado.tasas.map((r) =>
       `<tr data-id="${r.id}"><th scope="row">${esc(nombreR(r))}</th>` +
-      '<td class="der"><span data-r></span><small data-h></small></td>' +
-      '<td class="der" data-c="0"></td><td class="der" data-c="1"></td><td class="der" data-c="2"></td><td class="der" data-50></td></tr>').join('');
+      `<td class="der" data-label="${esc(tr('th_rate'))}"><div class="v"><span data-r></span><small data-h></small></div></td>` +
+      [0, 1, 2].map((k) => `<td class="der" data-c="${k}" data-label="${esc(tr('th_tras', num(estado.referencia[k])))}"></td>`).join('') +
+      `<td class="der" data-50 data-label="${esc(tr('th_50at'))}"></td></tr>`).join('');
   }
   function renderReferencia() {
     const horas = estado.modoRef === 'horas';
@@ -297,8 +301,8 @@
   function construirAjustes() {
     $('#cuerpo-ajustes').innerHTML = estado.tasas.map((r) =>
       `<tr><th scope="row">${esc(nombreR(r))}</th>` +
-      `<td><input type="number" min="1" step="1" value="${r.tasa}" data-id="${r.id}" data-campo="tasa" aria-label="${esc(tr('ar_rate', nombreR(r)))}"></td>` +
-      `<td><input type="number" min="0.1" step="0.1" value="${r.mult}" data-id="${r.id}" data-campo="mult" aria-label="${esc(tr('ar_mult', nombreR(r)))}"></td></tr>`).join('');
+      `<td data-label="${esc(tr('th_rate'))}"><input type="number" min="1" step="1" value="${r.tasa}" data-id="${r.id}" data-campo="tasa" aria-label="${esc(tr('ar_rate', nombreR(r)))}"></td>` +
+      `<td data-label="${esc(tr('adj_mult'))}"><input type="number" min="0.1" step="0.1" value="${r.mult}" data-id="${r.id}" data-campo="mult" aria-label="${esc(tr('ar_mult', nombreR(r)))}"></td></tr>`).join('');
   }
   $('#cuerpo-ajustes').addEventListener('input', (e) => {
     const r = estado.tasas.find((x) => x.id === e.target.dataset.id), v = Number(e.target.value);
@@ -325,6 +329,7 @@
     document.documentElement.lang = estado.idioma;
     document.title = tr('title');
     document.querySelectorAll('[data-i]').forEach((el) => { el.textContent = tr(el.dataset.i); });
+    document.querySelectorAll('[data-i-label]').forEach((el) => { el.dataset.label = tr(el.dataset.iLabel); });
     document.querySelectorAll('[data-i-html]').forEach((el) => { el.innerHTML = tr(el.dataset.iHtml); });
     $('#th-contar').title = tr('col_count_title');
     $('#meta-prog').setAttribute('aria-label', tr('hero_path_aria'));
